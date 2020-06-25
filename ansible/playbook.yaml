@@ -1,0 +1,15 @@
+---
+- name: Set up a dev stack for Magento2 on Ubuntu 16.04
+  hosts: all
+  become: yes
+  become_method: sudo
+  vars_files:
+    - "/vagrant/ansible/vars/dev_var.yaml"
+  roles:
+    - common
+    - nginx
+    - php
+    - node
+    - mariaDB
+    - redis
+    - magento2

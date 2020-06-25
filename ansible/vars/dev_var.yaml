@@ -1,0 +1,34 @@
+---
+magento_account_public_key: "1758692f8e79850d03944c705226be11"
+magento_account_private_key: "94318ba3d91c83a869a3dc20e1c8339c"
+magento_root_dir: "/vagrant/magento2"
+mariadb_version: '10.2'
+mariadb_packages:
+  - MariaDB
+  - MariaDB-server
+  - MySQL-python
+
+nginx_yum_repo_enabled: true
+mariadb_service: mariadb
+mariadb_socket: /var/lib/mysql/mysql.sock
+
+mariadb_config_network: /etc/my.cnf.d/network.cnf
+mariadb_config_server: /etc/my.cnf.d/server.cnf
+mariadb_root_password: 'Salm0n'
+mysql_dbname: "digicel_local"
+mysql_user: "localuser"
+mysql_password: "password"
+
+php_fpm_pool_name: "magento2"
+php_fpm_user: "nginx" 
+php_fpm_group: "nginx"
+php_fpm_ip_port: "/var/run/php73-php-fpm.sock" 
+
+redis_package_name: "redis"
+
+redis_template: "redis.conf.j2"
+redis_config_name: "redis.conf"
+redis_bind_ip: "127.0.0.1"
+redis_port: 6379
+redis_package_name: "redis"
+__nginx_user: "nginx"

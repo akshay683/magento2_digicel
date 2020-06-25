@@ -1,0 +1,15 @@
+---
+- name: Copy php.ini
+  become: yes
+  copy: src=php.ini dest=/etc/opt/remi/php73/php.ini
+  notify: Restart php-fpm
+
+#- name: Delete www.conf
+ # become: yes
+ # file: path=/etc/opt/remi/php73/php-fpm.d/www.conf state=absent
+ # notify: Restart php-fpm
+
+- name: Copy php-fpm.conf.j2
+  become: yes
+  template: src=php-fpm.conf.j2 dest=/etc/opt/remi/php73/php-fpm.d/www.conf
+  notify: Restart php-fpm

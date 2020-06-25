@@ -1,0 +1,17 @@
+---
+- name: Install development tools
+  yum: name={{ item }} state=present
+  with_items:
+    - gcc
+    - gcc-c++
+    - make
+    
+- name: Install node
+  shell: |
+    curl –sL https://rpm.nodesource.com/setup_12.x | bash && yum install nodejs -y
+
+- name: Install pm2
+  npm:
+    name: pm2
+    global: yes
+    state: present

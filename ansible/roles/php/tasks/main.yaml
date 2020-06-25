@@ -1,0 +1,11 @@
+---
+- include: install.yaml
+- include: conf.yaml
+#- include: xdebug.yaml
+
+- name: Check if composer is installed
+  stat: path=/usr/local/bin/composer
+  register: composer_bin_file
+
+- include: composer.yaml
+  when: composer_bin_file.stat.exists == False

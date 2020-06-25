@@ -1,0 +1,20 @@
+---
+- name: Update yum cache
+  become: yes
+  yum:
+    name: "*"
+    update_cache: true
+  tags: common
+
+- name: Repos directory
+  become: yes
+  file: path=/home/vagrant/repos/ state=directory owner=vagrant group=vagrant
+
+- name: Install dev packages
+  become: yes
+  yum: pkg={{ item }} state=latest
+  with_items:
+    - vim
+    - curl
+    - git
+    - htop

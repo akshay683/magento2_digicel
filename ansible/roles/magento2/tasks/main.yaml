@@ -1,0 +1,18 @@
+---
+- include: keys.yaml
+- name: Check if magento2 directoy exists
+  stat: path="{{ magento_root_dir }}"
+  register: magento2_dir
+- name: Check if magento2 directoy is populated
+  shell: "ls -1 {{ magento_root_dir }} | wc -l"
+  register: magento2_files_count
+  when: magento2_dir.stat.exists
+- include: create.yaml
+  when: (magento2_dir.stat.exists == False) or
+        (magento2_dir.stat.exists == True and magento2_files_count.stdout == "0")
+- name: Check if vendor directoy exists
+  stat: path="{{ magento_root_dir }}/vendor"
+  register: magento2_vendor_dir
+- include: vendor.yaml
+  when: magento2_vendor_dir.stat.exists == False
+- include: install.yaml

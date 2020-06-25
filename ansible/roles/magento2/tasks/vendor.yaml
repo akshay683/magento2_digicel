@@ -1,0 +1,3 @@
+---
+- name: Install vendor packages
+  composer: command=install working_dir="{{ magento_root_dir }}"

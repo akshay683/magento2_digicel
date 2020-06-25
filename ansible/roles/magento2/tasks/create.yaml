@@ -1,0 +1,10 @@
+---
+- name: Ensure project directory exists
+  file: path="{{ magento_root_dir }}" state=directory
+
+- name: Create project
+  shell: /usr/local/bin/composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition=2.3.3 "{{ magento_root_dir }}"
+  args:
+    chdir: "{{ magento_root_dir }}"
+    creates: "{{ magento_root_dir }}/composer.json"
+  notify: Reload nginx

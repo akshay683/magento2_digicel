@@ -1,0 +1,39 @@
+---
+
+- name: python binary installation
+  yum:
+    name: libselinux-python
+    state: present
+    
+- name: Enable nginx repo.
+  become: true
+  template:
+    src: nginx.repo.j2
+    dest: /etc/yum.repos.d/nginx.repo
+    owner: root
+    group: root
+    mode: 0644
+  when: nginx_yum_repo_enabled
+
+- name: Ensure nginx is installed.
+  become: true
+  yum:
+    name: nginx
+    state: present
+
+- name: create log-directory
+  file:
+    dest: /var/log/nginx/magento2
+    state: directory
+    mode: 0755
+
+- name: create log files
+  file:
+    dest: /var/log/nginx/magento2/error.log
+    state: touch
+
+- name: create log files
+  file:
+    dest: /var/log/nginx/magento2/access.log
+    state: touch
+

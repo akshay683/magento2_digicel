@@ -1,0 +1,37 @@
+---
+- name: Add repository 'epel-release'
+  become: yes
+  yum: name=epel-release state=installed
+
+- name: Add repository 'remi-repo'
+  become: yes
+  command: rpm -ih http://rpms.famillecollet.com/enterprise/remi-release-7.rpm creates=/etc/yum.repos.d/remi.repo
+
+- name: install php73
+  become: yes
+  yum: name={{ item }} enablerepo=epel,remi,remi-php73 state=installed
+  with_items:
+     - php73
+     - php73-php-mcrypt
+     - php73-php-mbstring
+     - php73-php-fpm
+     - php73-php-gd
+     - php73-php-xml
+     - php73-php-pdo
+     - php73-php-zip
+     - php73-php-intl
+     - php73-php-soap
+     - php73-php-pdo_mysql 
+     - php73-php-opcache
+     - php73-php-devel
+     - php73-php-bcmath
+
+- name : link env file
+  become: yes
+  command: ln -s /opt/remi/php73/enable /etc/profile.d/php73.sh creates=/etc/profile.d/php73.sh
+  notify: Restart php-fpm
+
+- name: link php file
+  become: yes
+  file: src=/opt/remi/php73/root/usr/bin/php dest=/usr/bin/php state=link
+  notify: Restart php-fpm

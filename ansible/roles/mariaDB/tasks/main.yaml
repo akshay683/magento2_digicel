@@ -1,0 +1,93 @@
+---
+
+- name: Add official MariaDB repository
+  become: true
+  yum_repository:
+    name: MariaDB
+    description: Official MariaDB repository
+    baseurl: "http://yum.mariadb.org/{{ mariadb_version }}/{{ ansible_distribution|lower|regex_replace('redhat', 'rhel') }}{{ ansible_distribution_major_version }}-amd64"
+    gpgkey: https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+    gpgcheck: yes
+
+- name: Install MariaDB packages
+  become: true
+  package:
+    name: "{{ item }}"
+    state: installed
+  with_items: "{{ mariadb_packages }}"
+
+- name: Ensure service is started
+  become: true
+  service:
+    name: "{{ mariadb_service }}"
+    state: started
+    enabled: yes
+
+- name: Install server config file
+  become: true
+  template:
+    src: etc_my.cnf.d_server.cnf.j2
+    dest: "{{ mariadb_config_server }}"
+  notify: restart mariadb
+
+- name: Install network config file
+  become: true
+  template:
+    src: etc_my.cnf.d_network.cnf.j2
+    dest: "{{ mariadb_config_network }}"
+  notify: restart mariadb
+
+# This command will fail when the root password was set previously
+- name: Check if root password is set
+  become: true
+  shell: >
+    mysqladmin -u root status
+  changed_when: false
+  failed_when: false
+  register: root_pwd_check
+
+- name: Set MariaDB root password for the first time
+  become: true
+  mysql_user:
+    name: root
+    password: "{{ mariadb_root_password }}"
+    host_all: yes
+    state: present
+  when: root_pwd_check.rc == 0
+
+- name: Remove the test database
+  become: true
+  mysql_db:
+    name: test
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+    state: absent
+
+- name: Create a database
+  become: true
+  become: true
+  mysql_db: 
+    name: "{{ mysql_dbname }}"
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+    state: present
+
+- name: Remove anonymous users
+  become: true
+  mysql_user:
+    name: ''
+    host_all: yes
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+    state: absent
+
+- name: Create a dedicated user
+  become: true
+  mysql_user: 
+    name: "{{ mysql_user }}"
+    password: "{{ mysql_password }}"
+    host: "{{ item.host|default('localhost') }}"
+    priv: "{{ mysql_dbname }}.*:ALL,GRANT"
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+    state: present
